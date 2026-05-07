@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>✨ 購物小偵探挑戰 ✨</title>
+    <style>
+        :root {
+            --primary: #ff6b81;
+            --primary-dark: #ff4757;
+            --secondary: #1e90ff;
+            --secondary-dark: #3742fa;
+            --success: #2ed573;
+            --success-dark: #20bf6b;
+            --warning: #ffa502;
+            --danger: #ff4757;
+            --danger-dark: #e84118;
+            --card-bg: #ffffff;
+            --text-main: #2f3542;
+            --bg-gradient: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 45%, #fbc2eb 100%);
+            --shadow: 0 14px 30px rgba(0,0,0,0.15);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Comic Sans MS', 'Microsoft JhengHei', 'PingFang HK', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        #app {
+            max-width: 980px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.94);
+            border: 4px solid #fff;
+            border-radius: 30px;
+            box-shadow: var(--shadow), inset 0 0 0 8px rgba(255,255,255,0.35);
+            padding: 28px 24px 24px;
+            position: relative;
+            overflow: hidden;
+            min-height: calc(100vh - 32px);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeInUp 0.45s ease;
+        }
+
+        .screen.active { display: block; }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-dark);
+            font-size: 34px;
+            margin: 12px 0 10px;
+            text-shadow: 2px 2px 0 #ffeaa7;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--secondary-dark);
+            font-size: 26px;
+            margin: 0 0 20px;
+        }
+
+        p.lead {
+            text-align: center;
+            font-size: 21px;
+            color: #57606f;
+            margin: 8px 0 18px;
+        }
+
+        .hero-icons {
+            text-align: center;
+            font-size: 66px;
+            margin-top: 26px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.08s ease, filter 0.2s ease;
+            position: relative;
+        }
+
+        button:hover { filter: brightness(1.05); }
+        button:active { transform: translateY(4px); }
+
+        .btn-mode-1, .btn-mode-2, .theme-btn, .mc-option, .btn-back, .btn-reset, .close-progress {
+            box-shadow: 0 6px 0 rgba(0,0,0,0.18), 0 10px 18px rgba(0,0,0,0.10);
+        }
+
+        .btn-mode-1 {
+            background: var(--primary);
+            box-shadow: 0 6px 0 var(--primary-dark), 0 10px 18px rgba(0,0,0,0.12);
+            font-size: 22px;
+            padding: 16px 28px;
+        }
+
+        .btn-mode-2 {
+            background: var(--secondary);
+            box-shadow: 0 6px 0 var(--secondary-dark), 0 10px 18px rgba(0,0,0,0.12);
+            font-size: 22px;
+            padding: 16px 28px;
+        }
+
+        .theme-btn {
+            background: var(--success);
+            box-shadow: 0 6px 0 var(--success-dark), 0 10px 18px rgba(0,0,0,0.12);
+            font-size: 20px;
+            padding: 14px 24px;
+        }
+
+        .btn-back {
+            background: #a4b0be;
+            box-shadow: 0 5px 0 #747d8c, 0 8px 14px rgba(0,0,0,0.10);
+            font-size: 16px;
+            padding: 10px 16px;
+        }
+
+        .btn-reset {
+            background: var(--danger);
+            box-shadow: 0 5px 0 var(--danger-dark), 0 8px 14px rgba(0,0,0,0.10);
+            font-size: 15px;
+            padding: 10px 14px;
+        }
+
+        #top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin: 54px 0 18px;
+            padding-bottom: 14px;
+            border-bottom: 4px dotted #dfe4ea;
+        }
+
+        #stats {
+            font-size: 22px;
+            font-weight: bold;
+            background: #fff7a8;
+            color: #ff4757;
+            border: 3px solid #ffb142;
+            border-radius: 18px;
+            padding: 10px 16px;
+            text-align: center;
+        }
+
+        .combo-text {
+            display: inline-block;
+            color: #3742fa;
+            animation: popText 0.4s ease;
+        }
+
+        #game-layout {
+            display: flex;
+            gap: 28px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        #table-container {
+            flex: 1.15;
+            min-width: 320px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border: 4px solid var(--warning);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            font-size: 23px;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        th {
+            background: var(--warning);
+            color: white;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        tbody tr:nth-child(even) { background: #fff9e8; }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .highlight-hint td {
+            background-color: #ffeaa7 !important;
+            color: #d35400;
+            font-weight: bold;
+            animation: glow 1.1s infinite alternate;
+        }
+
+        .scan-row td {
+            animation: scanGlow 1s infinite alternate;
+        }
+
+        .visual-cell {
+            outline: 4px solid #ff7675;
+            outline-offset: -4px;
+            animation: pulseCell 0.9s infinite alternate;
+            font-weight: bold;
+            background: #fff0f0 !important;
+        }
+
+        .marker-badge {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 13px;
+            color: white;
+            background: #ff6b81;
+            border-radius: 999px;
+            padding: 2px 8px;
+            vertical-align: middle;
+        }
+
+        #qa-container {
+            flex: 1;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        #question-text {
+            background: #ffe08a;
+            color: #2f3542;
+            border: 4px solid #ffb142;
+            border-radius: 20px;
+            box-shadow: 0 6px 0 #ffb142;
+            padding: 18px 18px 16px;
+            font-size: 23px;
+            font-weight: bold;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        #question-text::after {
+            content: '💬';
+            position: absolute;
+            top: -14px;
+            right: -8px;
+            font-size: 28px;
+        }
+
+        .q-key {
+            display: inline;
+            font-weight: 900;
+            text-decoration: underline;
+            text-decoration-thickness: 3px;
+            text-underline-offset: 3px;
+            padding: 0 2px;
+            border-radius: 6px;
+        }
+
+        .key-max, .key-most {
+            color: #c0392b;
+            background: rgba(255, 118, 117, 0.16);
+        }
+
+        .key-min, .key-least {
+            color: #0984e3;
+            background: rgba(116, 185, 255, 0.16);
+        }
+
+        .key-diff {
+            color: #6c5ce7;
+            background: rgba(162, 155, 254, 0.18);
+        }
+
+        .key-count {
+            color: #00b894;
+            background: rgba(85, 239, 196, 0.18);
+        }
+
+        .key-price {
+            color: #d35400;
+            background: rgba(255, 177, 66, 0.18);
+        }
+
+        .key-has {
+            color: #16a085;
+            background: rgba(85, 239, 196, 0.18);
+        }
+
+        #support-box {
+            background: #eef7ff;
+            border: 3px dashed #74b9ff;
+            border-radius: 16px;
+            padding: 12px 14px;
+        }
+
+        .support-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0984e3;
+            margin-bottom: 8px;
+        }
+
+        .support-line {
+            font-size: 17px;
+            line-height: 1.5;
+            color: #2d3436;
+            background: rgba(255,255,255,0.82);
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-top: 6px;
+        }
+
+        .support-hidden { display: none; }
+
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mc-option {
+            width: 100%;
+            background: #7bed9f;
+            color: #2f3542;
+            box-shadow: 0 5px 0 #2ed573, 0 8px 14px rgba(0,0,0,0.10);
+            text-align: left;
+            font-size: 22px;
+            padding: 14px 18px;
+            border-radius: 16px;
+        }
+
+        .mc-option:hover { background: #55ef83; }
+
+        .mc-option.disabled {
+            opacity: 0.6;
+            filter: grayscale(70%);
+            pointer-events: none;
+            box-shadow: none;
+            transform: translateY(5px);
+        }
+
+        #feedback {
+            min-height: 44px;
+            font-size: 23px;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .correct {
+            color: var(--success-dark);
+            display: block;
+            animation: popText 0.45s ease;
+        }
+
+        .wrong {
+            color: var(--danger);
+            display: block;
+        }
+
+        .shake { animation: shake 0.45s both; }
+
+        #overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.95);
+            border-radius: 28px;
+            display: none;
+            z-index: 80;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 24px;
+        }
+
+        #overlay h2 {
+            font-size: 42px;
+            margin: 0 0 10px;
+            color: var(--primary-dark);
+            text-shadow: 2px 2px 0 #ffeaa7;
+        }
+
+        #overlay p {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #2f3542;
+            line-height: 1.5;
+        }
+
+        #overlay-icons {
+            font-size: 52px;
+            margin-top: 12px;
+        }
+
+        #progress-fab {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 120;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #progress-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: conic-gradient(#2ed573 0deg, #2ed573 0deg, #e5e7eb 0deg, #e5e7eb 360deg);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #progress-ring::before {
+            content: "";
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: inset 0 0 0 2px #f1f2f6;
+        }
+
+        #progress-ring-text {
+            position: relative;
+            z-index: 1;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2f3542;
+        }
+
+        #progress-ring-label {
+            background: rgba(255,255,255,0.92);
+            color: #57606f;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        #progress-backdrop {
+            position: absolute;
+            inset: 0;
+            background: transparent;
+            z-index: 109;
+            display: none;
+        }
+
+        #progress-panel {
+            position: absolute;
+            top: 86px;
+            right: 12px;
+            z-index: 110;
+            display: none;
+        }
+
+        .progress-panel-card {
+            width: min(330px, 80vw);
+            background: white;
+            border-radius: 18px;
+            border: 3px solid #dfe4ea;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.20);
+            padding: 14px;
+        }
+
+        .progress-panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .progress-panel-head h3 {
+            margin: 0;
+            color: #3742fa;
+            font-size: 20px;
+        }
+
+        .close-progress {
+            background: #a4b0be;
+            color: #fff;
+            font-size: 14px;
+            padding: 7px 10px;
+            border-radius: 10px;
+            box-shadow: none;
+        }
+
+        .progress-row {
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .progress-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .progress-badge {
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            background: #f1f2f6;
+            color: #57606f;
+        }
+
+        .progress-badge.done {
+            background: #d4f8df;
+            color: #15803d;
+        }
+
+        .progress-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -18px;
+            width: 12px;
+            height: 18px;
+            opacity: 0.95;
+            border-radius: 3px;
+            z-index: 130;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0.9; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popText {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.22); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes glow {
+            from { box-shadow: inset 0 0 12px #ffb142; }
+            to { box-shadow: inset 0 0 2px #ffb142; }
+        }
+
+        @keyframes pulseCell {
+            from { box-shadow: inset 0 0 0 0 rgba(255,118,117,0.25); }
+            to { box-shadow: inset 0 0 0 6px rgba(255,118,117,0.18); }
+        }
+
+        @keyframes scanGlow {
+            from { background-color: #fff9e8; }
+            to { background-color: #dff9fb; }
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translateX(-2px); }
+            20%, 80% { transform: translateX(4px); }
+            30%, 50%, 70% { transform: translateX(-6px); }
+            40%, 60% { transform: translateX(6px); }
+        }
+
+        @media (max-width: 860px) {
+            #app {
+                padding: 22px 16px 18px;
+                min-height: calc(100vh - 32px);
+            }
+
+            h1 {
+                font-size: 30px;
+                padding-right: 74px;
+            }
+
+            p.lead { font-size: 19px; }
+
+            #top-bar {
+                margin-top: 50px;
+                flex-wrap: wrap;
+            }
+
+            #stats {
+                font-size: 19px;
+                width: 100%;
+            }
+
+            table { font-size: 20px; }
+            th { font-size: 21px; }
+            #question-text { font-size: 21px; }
+            .mc-option { font-size: 20px; }
+
+            #progress-ring {
+                width: 58px;
+                height: 58px;
+            }
+
+            #progress-ring::before {
+                width: 44px;
+                height: 44px;
+            }
+
+            #progress-panel {
+                top: 78px;
+                right: 8px;
+            }
+
+            .progress-panel-card {
+                width: min(290px, 84vw);
+            }
+        }
+    
+        .correct-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 4px solid #4CAF50;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .correct-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        .correct-popup-icon {
+            font-size: 80px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .correct-popup-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        .correct-popup-points {
+            font-size: 20px;
+            color: #FF9800;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="progress-fab">
+        <div id="progress-ring" onclick="toggleProgressPanel()" aria-label="查看進度" role="button" tabindex="0">
+            <span id="progress-ring-text">0%</span>
+        </div>
+        <div id="progress-ring-label">進度</div>
+    </div>
+
+    <div id="progress-backdrop" onclick="closeProgressPanel()"></div>
+
+    <div id="progress-panel">
+        <div class="progress-panel-card">
+            <div class="progress-panel-head">
+                <h3>📘 學習進度</h3>
+                <button class="close-progress" onclick="closeProgressPanel()">✕</button>
+            </div>
+            <div id="progress-detail"></div>
+            <div class="progress-actions">
+                <button class="btn-reset" onclick="resetProgress()">🗑️ 重設進度</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="home-screen" class="screen active">
+        <h1>✨ 購物小偵探挑戰 ✨</h1>
+        <p class="lead">請選擇你想挑戰的任務：</p>
+        <div class="btn-group">
+            <button class="btn-mode-1" onclick="selectMode('itemList')">🎒 點算物品（看數量）</button>
+            <button class="btn-mode-2" onclick="selectMode('priceList')">💰 查看價目表（看價錢）</button>
+        </div>
+        <div class="hero-icons">🏪 🛒 🎈</div>
+    </div>
+
+    <div id="theme-screen" class="screen">
+        <h1 id="theme-title">選擇主題</h1>
+        <div class="btn-group" id="theme-buttons"></div>
+        <div class="btn-group" style="margin-top:32px;">
+            <button class="btn-back" onclick="showScreen('home-screen')">🔙 返回首頁</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div id="top-bar">
+            <button class="btn-back" onclick="goHome()">✖️ 返回首頁</button>
+            <div id="stats">
+                ⭐ 分數：<span id="score-display">0</span> |
+                🔥 連擊：<span id="combo-display" class="combo-text">0</span>
+            </div>
+        </div>
+
+        <h2 id="game-title">主題</h2>
+
+        <div id="game-layout">
+            <div id="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr id="table-header"></tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+
+            <div id="qa-container">
+                <div id="question-text">問題載入中...</div>
+
+                <div id="support-box">
+                    <div class="support-title">🪄 幫幫你</div>
+                    <div id="text-hint" class="support-line"></div>
+                    <div id="equation-hint" class="support-line support-hidden"></div>
+                    <div id="visual-hint-note" class="support-line support-hidden"></div>
+                </div>
+
+                <div id="options-container"></div>
+                <div id="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay">
+        <h2>🎉 任務完成！</h2>
+        <p id="overlay-message">準備前往下一站…</p>
+        <div id="overlay-icons">🚀 🌟 🏆</div>
+    </div>
+</div>
+
+
+    <!-- 音效元素 -->
+    <audio id="correct-sound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
+    <audio id="wrong-sound" src="https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3" preload="auto"></audio>
+
+<script>
+    const database = {
+        itemList: {
+            title: "物品清單模式",
+            unit: "件/個",
+            themes: [
+                { id: '✏️ 文具', items: ['✏️ 鉛筆', '📝 橡皮擦', '📏 直尺', '📓 筆記本', '✂️ 剪刀', '📎 膠水', '🖍️ 顏色筆'] },
+                { id: '🍎 水果', items: ['🍎 蘋果', '🍌 香蕉', '🍊 橙', '🍉 西瓜', '🍇 葡萄', '🍓 草莓', '🍍 菠蘿'] },
+                { id: '🎈 玩具', items: ['🎲 積木', '🚗 玩具車', '🎨 拼圖', '🎎 洋娃娃', '⚽ 皮球', '🤖 機器人'] },
+                { id: '🐶 動物', items: ['🐶 小狗', '🐱 小貓', '🐰 兔子', '🐢 烏龜', '🐟 金魚', '🐦 小鳥'] },
+                { id: '🍬 零食', items: ['🍟 薯片', '🍬 糖果', '🍫 巧克力', '🍪 餅乾', '🍮 果凍', '☁️ 棉花糖'] }
+            ]
+        },
+        priceList: {
+            title: "價目表模式",
+            unit: "元",
+            themes: [
+                { id: '🍞 麵包店', items: ['🍞 菠蘿包', '🍮 蛋撻', '🌭 腸仔包', '🍞 排包', '🍪 曲奇餅', '🍰 蛋糕'] },
+                { id: '🍔 快餐店', items: ['🍔 漢堡包', '🍟 薯條', '🌭 熱狗', '🍗 炸雞', '🍹 汽水', '🍦 冰淇淋'] },
+                { id: '🎒 文具店', items: ['🖍️ 螢光筆', '📜 畫紙', '🎨 水彩', '🖌️ 毛筆', '🌍 地球儀', '🎒 書包'] },
+                { id: '🛒 超級市場', items: ['🍼 牛奶', '🍳 雞蛋', '🧀 牛油', '🍹 果汁', '🍜 即食麵', '🍖 火腿'] },
+                { id: '☕ 茶餐廳', items: ['☕ 奶茶', '🍞 西多士', '🍜 沙爹牛肉麵', '🥞 菠蘿油', '🍧 紅豆冰', '🌮 蛋牛治'] }
+            ]
+        }
+    };
+
+    const PROGRESS_KEY = 'shopping_detective_progress_v4';
+
+    function createDefaultProgress() {
+        return {
+            itemList: { completedThemes: [] },
+            priceList: { completedThemes: [] }
+        };
+    }
+
+    function loadProgress() {
+        try {
+            const raw = localStorage.getItem(PROGRESS_KEY);
+            if (!raw) return createDefaultProgress();
+            const data = JSON.parse(raw);
+            return {
+                itemList: {
+                    completedThemes: Array.isArray(data.itemList?.completedThemes) ? data.itemList.completedThemes : []
+                },
+                priceList: {
+                    completedThemes: Array.isArray(data.priceList?.completedThemes) ? data.priceList.completedThemes : []
+                }
+            };
+        } catch (e) {
+            return createDefaultProgress();
+        }
+    }
+
+    function saveProgress() {
+        try {
+            localStorage.setItem(PROGRESS_KEY, JSON.stringify(playerProgress));
+        } catch (e) {}
+    }
+
+    let playerProgress = loadProgress();
+
+    let currentMode = '';
+    let currentThemeIndex = 0;
+    let score = 0;
+    let combo = 0;
+    let currentTableData = [];
+    let currentQuestions = [];
+    let currentQIndex = 0;
+    let currentWrongCount = 0;
+    let autoTimer = null;
+
+    function shuffle(array) {
+        return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function clearAutoTimer() {
+        if (autoTimer) {
+            clearTimeout(autoTimer);
+            autoTimer = null;
+        }
+    }
+
+    function goHome() {
+        clearAutoTimer();
+        closeProgressPanel();
+        showScreen('home-screen');
+        updateProgressUI();
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function getTotalThemeCount() {
+        return database.itemList.themes.length + database.priceList.themes.length;
+    }
+
+    function getCompletedThemeCount() {
+        return playerProgress.itemList.completedThemes.length + playerProgress.priceList.completedThemes.length;
+    }
+
+    function getOverallProgressPercent() {
+        return Math.round((getCompletedThemeCount() / getTotalThemeCount()) * 100);
+    }
+
+    function toggleProgressPanel() {
+        const panel = document.getElementById('progress-panel');
+        const backdrop = document.getElementById('progress-backdrop');
+        const isOpen = panel.style.display === 'block';
+        if (isOpen) {
+            panel.style.display = 'none';
+            backdrop.style.display = 'none';
+        } else {
+            updateProgressUI();
+            panel.style.display = 'block';
+            backdrop.style.display = 'block';
+        }
+    }
+
+    function closeProgressPanel() {
+        document.getElementById('progress-panel').style.display = 'none';
+        document.getElementById('progress-backdrop').style.display = 'none';
+    }
+
+    function getModeLabel(mode) {
+        return mode === 'itemList' ? '物品清單' : '價目表';
+    }
+
+    function getNextUnplayedModeAndTheme() {
+        const itemRemaining = database.itemList.themes
+            .map((theme, index) => ({ mode: 'itemList', index, name: theme.id }))
+            .filter(x => !playerProgress.itemList.completedThemes.includes(x.index));
+
+        const priceRemaining = database.priceList.themes
+            .map((theme, index) => ({ mode: 'priceList', index, name: theme.id }))
+            .filter(x => !playerProgress.priceList.completedThemes.includes(x.index));
+
+        if (itemRemaining.length === 0 && priceRemaining.length === 0) {
+            return { doneAll: true, mode: null, index: null, label: '全部主題已完成！' };
+        }
+
+        if (currentMode === 'itemList' && priceRemaining.length > 0) {
+            return {
+                doneAll: false,
+                mode: 'priceList',
+                index: priceRemaining[0].index,
+                label: `價目表 - ${priceRemaining[0].name}`
+            };
+        }
+
+        if (currentMode === 'priceList' && itemRemaining.length > 0) {
+            return {
+                doneAll: false,
+                mode: 'itemList',
+                index: itemRemaining[0].index,
+                label: `物品清單 - ${itemRemaining[0].name}`
+            };
+        }
+
+        const next = itemRemaining[0] || priceRemaining[0];
+        return {
+            doneAll: false,
+            mode: next.mode,
+            index: next.index,
+            label: `${getModeLabel(next.mode)} - ${next.name}`
+        };
+    }
+
+    function updateProgressUI() {
+        const percent = getOverallProgressPercent();
+        const deg = Math.round(percent / 100 * 360);
+        const ring = document.getElementById('progress-ring');
+        const ringText = document.getElementById('progress-ring-text');
+
+        ring.style.background = `conic-gradient(#2ed573 0deg, #2ed573 ${deg}deg, #e5e7eb ${deg}deg, #e5e7eb 360deg)`;
+        ringText.innerText = `${percent}%`;
+
+        const itemHtml = database.itemList.themes.map((theme, index) => {
+            const done = playerProgress.itemList.completedThemes.includes(index);
+            return `<span class="progress-badge ${done ? 'done' : ''}">${done ? '✓ ' : ''}${theme.id}</span>`;
+        }).join('');
+
+        const priceHtml = database.priceList.themes.map((theme, index) => {
+            const done = playerProgress.priceList.completedThemes.includes(index);
+            return `<span class="progress-badge ${done ? 'done' : ''}">${done ? '✓ ' : ''}${theme.id}</span>`;
+        }).join('');
+
+        const nextTarget = getNextUnplayedModeAndTheme();
+
+        document.getElementById('progress-detail').innerHTML = `
+            <div class="progress-row"><strong>整體完成：</strong> ${getCompletedThemeCount()} / ${getTotalThemeCount()}（${percent}%）</div>
+            <div class="progress-row"><strong>物品清單：</strong><div class="progress-badges">${itemHtml}</div></div>
+            <div class="progress-row"><strong>價目表：</strong><div class="progress-badges">${priceHtml}</div></div>
+            <div class="progress-row"><strong>下一站：</strong> ${nextTarget.label}</div>
+        `;
+    }
+
+    function resetProgress() {
+        const yes = confirm('確定要重設所有進度嗎？');
+        if (!yes) return;
+        playerProgress = createDefaultProgress();
+        saveProgress();
+        updateProgressUI();
+        closeProgressPanel();
+        showScreen('home-screen');
+    }
+
+    function selectMode(mode) {
+        clearAutoTimer();
+        currentMode = mode;
+        closeProgressPanel();
+
+        const themes = database[mode].themes;
+        const themeButtons = document.getElementById('theme-buttons');
+        themeButtons.innerHTML = '';
+
+        themes.forEach((theme, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'theme-btn';
+            const completed = playerProgress[mode].completedThemes.includes(index);
+            btn.innerText = `${completed ? '✅ ' : ''}${theme.id}`;
+            btn.onclick = () => {
+                score = 0;
+                combo = 0;
+                updateStats();
+                startGame(index);
+            };
+            themeButtons.appendChild(btn);
+        });
+
+        document.getElementById('theme-title').innerText = `請選擇你要去的【${database[mode].title.replace('模式','')}】主題：`;
+        showScreen('theme-screen');
+        updateProgressUI();
+    }
+
+    function getRandomNumbers(count, min, max) {
+        let nums = new Set();
+        while (nums.size < count) {
+            nums.add(Math.floor(Math.random() * (max - min + 1)) + min);
+        }
+        return Array.from(nums);
+    }
+
+    function noBorrowSubtraction(a, b) {
+        return (a % 10) >= (b % 10);
+    }
+
+    function startGame(themeIndex) {
+        clearAutoTimer();
+        closeProgressPanel();
+
+        currentThemeIndex = themeIndex;
+        currentQIndex = 0;
+        currentWrongCount = 0;
+        document.getElementById('feedback').innerHTML = '';
+        document.getElementById('feedback').className = '';
+
+        const theme = database[currentMode].themes[currentThemeIndex];
+        document.getElementById('game-title').innerText = `${theme.id}${currentMode === 'itemList' ? ' 的清單' : ' 的價目表'}`;
+
+        let safe = false;
+        let tempData = [];
+
+        while (!safe) {
+            const selectedItems = shuffle(theme.items).slice(0, 5);
+            const values = getRandomNumbers(5, currentMode === 'itemList' ? 2 : 20, currentMode === 'itemList' ? 25 : 80);
+
+            tempData = selectedItems.map((item, i) => ({
+                name: item,
+                value: values[i],
+                id: i
+            }));
+
+            const sorted = [...tempData].sort((a, b) => b.value - a.value);
+            const highest = sorted[0];
+            const lowest = sorted[sorted.length - 1];
+            safe = noBorrowSubtraction(highest.value, lowest.value);
+        }
+
+        currentTableData = tempData;
+        renderTable();
+        generateQuestions();
+        showScreen('game-screen');
+        updateProgressUI();
+        renderQuestion();
+    }
+
+    function renderTable() {
+        const header = document.getElementById('table-header');
+        const body = document.getElementById('table-body');
+        header.innerHTML = `<th style="width:40px;">#</th><th>📦 物品名稱</th><th>${currentMode === 'itemList' ? '🔢 數量' : '💲 價錢（元）'}</th>`;
+        body.innerHTML = '';
+
+        currentTableData.forEach((row, i) => {
+            const tr = document.createElement('tr');
+            tr.id = `row-${i}`;
+            tr.innerHTML = `<td class="index-cell" style="font-weight:bold; color:#666;">${i + 1}</td><td>${row.name}</td><td>${row.value}</td>`;
+            body.appendChild(tr);
+        });
+    }
+
+    function genOptions(correctAns, type = 'num', optionCount = 3) {
+        let opts = [correctAns];
+
+        while (opts.length < optionCount) {
+            if (type === 'num') {
+                let offset = Math.floor(Math.random() * 8) + 1;
+                let wrong = correctAns + (Math.random() > 0.5 ? offset : -offset);
+                if (wrong > 0 && !opts.includes(wrong)) opts.push(wrong);
+            } else {
+                let pool = currentTableData.map(x => x.name);
+                let randomItem = pool[Math.floor(Math.random() * pool.length)];
+                if (!opts.includes(randomItem)) opts.push(randomItem);
+            }
+        }
+        return shuffle(opts);
+    }
+
+    function itemNameOnly(fullName) {
+        const parts = fullName.split(' ');
+        return parts.length > 1 ? parts.slice(1).join(' ') : fullName;
+    }
+
+    function colorizeKeywords(text) {
+        return text
+            .replaceAll('最貴', `<span class="q-key key-max">🔴最貴</span>`)
+            .replaceAll('最平', `<span class="q-key key-min">🔵最平</span>`)
+            .replaceAll('最多', `<span class="q-key key-most">🔴最多</span>`)
+            .replaceAll('最少', `<span class="q-key key-least">🔵最少</span>`)
+            .replaceAll('相差多少元', `<span class="q-key key-diff">🟣相差多少元</span>`)
+            .replaceAll('相差多少', `<span class="q-key key-diff">🟣相差多少</span>`)
+            .replaceAll('多少元', `<span class="q-key key-price">🟠多少元</span>`)
+            .replaceAll('多少件／個', `<span class="q-key key-count">🟢多少件／個</span>`)
+            .replaceAll('多少款物品', `<span class="q-key key-count">🟢多少款物品</span>`)
+            .replaceAll('有沒有列出', `<span class="q-key key-has">🟢有沒有列出</span>`)
+            .replaceAll('共有多少件／個', `<span class="q-key key-count">🟢共有多少件／個</span>`)
+            .replaceAll('買兩份', `<span class="q-key key-price">🟠買兩份</span>`)
+            .replaceAll('買一份', `<span class="q-key key-price">🟠買一份</span>`);
+    }
+
+    function makeQuestion(q, ans, options, hintRows, extra = {}) {
+        return {
+            q: colorizeKeywords(q),
+            ans,
+            options,
+            hintRows,
+            hideUnit: !!extra.hideUnit,
+            textHint: extra.textHint || "先看題目重點字，再在表格找資料。",
+            equationHint: extra.equationHint || "",
+            visualHintType: extra.visualHintType || "single-row"
+        };
+    }
+
+    function generateQuestions() {
+        const sortedData = [...currentTableData].sort((a, b) => b.value - a.value);
+        const highest = sortedData[0];
+        const lowest = sortedData[sortedData.length - 1];
+        const item1 = currentTableData[0];
+        const item2 = currentTableData[1];
+        const item3 = currentTableData[2];
+
+        currentQuestions = [];
+
+        if (currentMode === 'priceList') {
+            currentQuestions.push(makeQuestion(
+                "1️⃣ 哪種物品最貴？",
+                highest.name,
+                genOptions(highest.name, 'text'),
+                [highest.id],
+                {
+                    textHint: "先看價錢欄，找最大的數字。",
+                    equationHint: "這題不用計算，只要比較哪個價錢最大。",
+                    visualHintType: "max-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                "2️⃣ 哪種物品最平？",
+                lowest.name,
+                genOptions(lowest.name, 'text'),
+                [lowest.id],
+                {
+                    textHint: "先看價錢欄，找最小的數字。",
+                    equationHint: "這題不用計算，只要比較哪個價錢最小。",
+                    visualHintType: "min-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                "3️⃣ 最貴和最平的物品相差多少元？",
+                highest.value - lowest.value,
+                genOptions(highest.value - lowest.value, 'num'),
+                [highest.id, lowest.id],
+                {
+                    textHint: "先找最貴的物品，再找最平的物品。",
+                    equationHint: `${highest.value} - ${lowest.value}`,
+                    visualHintType: "difference"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `4️⃣ ${item1.name} 售多少元？`,
+                item1.value,
+                genOptions(item1.value, 'num'),
+                [item1.id],
+                {
+                    textHint: "先找到這個物品名稱，再看右邊的價錢。",
+                    equationHint: "物品名稱對應右邊的數字。",
+                    visualHintType: "single-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `5️⃣ ${item2.name} 售多少元？`,
+                item2.value,
+                genOptions(item2.value, 'num'),
+                [item2.id],
+                {
+                    textHint: "先找到這個物品名稱，再看右邊的價錢。",
+                    equationHint: "物品名稱對應右邊的數字。",
+                    visualHintType: "single-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                "6️⃣ 價目表上一共列出了多少款物品？",
+                5,
+                genOptions(5, 'num'),
+                [0,1,2,3,4],
+                {
+                    hideUnit: true,
+                    textHint: "由上到下數一數，共有幾行物品。",
+                    equationHint: "一行代表一款物品。",
+                    visualHintType: "count-rows"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `7️⃣ 買一份 ${item1.name} 和一份 ${item3.name} 共需多少元？`,
+                item1.value + item3.value,
+                genOptions(item1.value + item3.value, 'num'),
+                [item1.id, item3.id],
+                {
+                    textHint: "先找第一樣物品的價錢，再找第二樣物品的價錢。",
+                    equationHint: `${item1.value} + ${item3.value}`,
+                    visualHintType: "sum"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `8️⃣ 買兩份 ${item2.name} 共需多少元？`,
+                item2.value * 2,
+                genOptions(item2.value * 2, 'num'),
+                [item2.id],
+                {
+                    textHint: "先找到這件物品的價錢，再想兩份是多少。",
+                    equationHint: `${item2.value} + ${item2.value}`,
+                    visualHintType: "single-row"
+                }
+            ));
+        } else {
+            currentQuestions.push(makeQuestion(
+                "1️⃣ 哪種物品數量最多？",
+                highest.name,
+                genOptions(highest.name, 'text'),
+                [highest.id],
+                {
+                    textHint: "先看數量欄，找最大的數字。",
+                    equationHint: "這題不用計算，只要比較哪個數量最大。",
+                    visualHintType: "max-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                "2️⃣ 哪種物品數量最少？",
+                lowest.name,
+                genOptions(lowest.name, 'text'),
+                [lowest.id],
+                {
+                    textHint: "先看數量欄，找最小的數字。",
+                    equationHint: "這題不用計算，只要比較哪個數量最小。",
+                    visualHintType: "min-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                "3️⃣ 最多和最少的物品數量相差多少？",
+                highest.value - lowest.value,
+                genOptions(highest.value - lowest.value, 'num'),
+                [highest.id, lowest.id],
+                {
+                    textHint: "先找最多的物品，再找最少的物品。",
+                    equationHint: `${highest.value} - ${lowest.value}`,
+                    visualHintType: "difference"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `4️⃣ ${item1.name} 有多少件／個？`,
+                item1.value,
+                genOptions(item1.value, 'num'),
+                [item1.id],
+                {
+                    textHint: "先找到這個物品名稱，再看右邊的數量。",
+                    equationHint: "物品名稱對應右邊的數字。",
+                    visualHintType: "single-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `5️⃣ ${item2.name} 有多少件／個？`,
+                item2.value,
+                genOptions(item2.value, 'num'),
+                [item2.id],
+                {
+                    textHint: "先找到這個物品名稱，再看右邊的數量。",
+                    equationHint: "物品名稱對應右邊的數字。",
+                    visualHintType: "single-row"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                "6️⃣ 清單上一共列出了多少款物品？",
+                5,
+                genOptions(5, 'num'),
+                [0,1,2,3,4],
+                {
+                    hideUnit: true,
+                    textHint: "由上到下數一數，共有幾行物品。",
+                    equationHint: "一行代表一款物品。",
+                    visualHintType: "count-rows"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `7️⃣ ${item1.name} 和 ${item3.name} 共有多少件／個？`,
+                item1.value + item3.value,
+                genOptions(item1.value + item3.value, 'num'),
+                [item1.id, item3.id],
+                {
+                    textHint: "先找第一樣物品的數量，再找第二樣物品的數量。",
+                    equationHint: `${item1.value} + ${item3.value}`,
+                    visualHintType: "sum"
+                }
+            ));
+
+            currentQuestions.push(makeQuestion(
+                `8️⃣ ${highest.name} 比 ${lowest.name} 多多少？`,
+                highest.value - lowest.value,
+                genOptions(highest.value - lowest.value, 'num'),
+                [highest.id, lowest.id],
+                {
+                    textHint: "先看哪個多，再看哪個少。",
+                    equationHint: `${highest.value} - ${lowest.value}`,
+                    visualHintType: "difference"
+                }
+            ));
+        }
+
+        const themeAllItems = database[currentMode].themes[currentThemeIndex].items;
+        const unselectedItems = themeAllItems.filter(item => !currentTableData.some(t => t.name === item));
+
+        let hasItem = Math.random() > 0.5;
+        let targetItemName = "";
+
+        if (!hasItem && unselectedItems.length > 0) {
+            targetItemName = unselectedItems[Math.floor(Math.random() * unselectedItems.length)];
+        } else {
+            hasItem = true;
+            targetItemName = currentTableData[Math.floor(Math.random() * currentTableData.length)].name;
+        }
+
+        currentQuestions.push(makeQuestion(
+            `9️⃣ 請問表內有沒有列出「${targetItemName}」？`,
+            hasItem ? "⭕ 有" : "❌ 沒有",
+            ["⭕ 有", "❌ 沒有"],
+            hasItem ? [currentTableData.find(t => t.name === targetItemName).id] : [0,1,2,3,4],
+            {
+                hideUnit: true,
+                textHint: "由上到下逐行找這個名稱。",
+                equationHint: "找到就是「有」，找不到就是「沒有」。",
+                visualHintType: hasItem ? "single-row" : "scan-all"
+            }
+        ));
+    }
+
+    function resetHintUI() {
+        document.getElementById('text-hint').classList.remove('support-hidden');
+        document.getElementById('equation-hint').classList.add('support-hidden');
+        document.getElementById('visual-hint-note').classList.add('support-hidden');
+
+        document.getElementById('text-hint').innerHTML = '';
+        document.getElementById('equation-hint').innerHTML = '';
+        document.getElementById('visual-hint-note').innerHTML = '';
+
+        document.querySelectorAll('.highlight-hint').forEach(el => el.classList.remove('highlight-hint'));
+        document.querySelectorAll('.scan-row').forEach(el => el.classList.remove('scan-row'));
+        document.querySelectorAll('.visual-cell').forEach(el => el.classList.remove('visual-cell'));
+        document.querySelectorAll('.marker-badge').forEach(el => el.remove());
+    }
+
+    function showBaseHint(qData) {
+        document.getElementById('text-hint').innerHTML = `📝 文字提示：${qData.textHint || '先看題目重點字，再在表格找資料。'}`;
+    }
+
+    function showEquationHint(qData) {
+        if (!qData.equationHint) return;
+        const el = document.getElementById('equation-hint');
+        el.classList.remove('support-hidden');
+        el.innerHTML = `➗ 算式提示：${qData.equationHint}`;
+    }
+
+    function showVisualHint(qData) {
+        const note = document.getElementById('visual-hint-note');
+        note.classList.remove('support-hidden');
+        note.innerHTML = `👀 視覺提示：請看表格中發光的位置。`;
+
+        if (qData.visualHintType === 'max-row' || qData.visualHintType === 'min-row' || qData.visualHintType === 'single-row') {
+            qData.hintRows.forEach(rowId => {
+                const row = document.getElementById(`row-${rowId}`);
+                if (row) row.classList.add('highlight-hint');
+            });
+        }
+
+        if (qData.visualHintType === 'difference') {
+            qData.hintRows.forEach((rowId, idx) => {
+                const row = document.getElementById(`row-${rowId}`);
+                if (row) {
+                    row.classList.add('highlight-hint');
+                    const valueCell = row.children[2];
+                    if (valueCell) valueCell.classList.add('visual-cell');
+
+                    const nameCell = row.children[1];
+                    if (nameCell && !nameCell.querySelector('.marker-badge')) {
+                        const badge = document.createElement('span');
+                        badge.className = 'marker-badge';
+                        badge.innerText = idx === 0 ? '大數' : '小數';
+                        nameCell.appendChild(badge);
+                    }
+                }
+            });
+        }
+
+        if (qData.visualHintType === 'sum') {
+            qData.hintRows.forEach((rowId) => {
+                const row = document.getElementById(`row-${rowId}`);
+                if (row) {
+                    row.classList.add('highlight-hint');
+                    const valueCell = row.children[2]; // Index is now 2 because of numbering column (0: #, 1: name, 2: value)
+                    if (valueCell) valueCell.classList.add('visual-cell');
+                }
+            });
+        }
+
+        if (qData.visualHintType === 'count-rows' || qData.visualHintType === 'scan-all') {
+            currentTableData.forEach((_, idx) => {
+                const row = document.getElementById(`row-${idx}`);
+                if (row) row.classList.add('scan-row');
+            });
+        }
+    }
+
+    function renderQuestion() {
+        const qData = currentQuestions[currentQIndex];
+        currentWrongCount = 0;
+        resetHintUI();
+
+        document.getElementById('question-text').innerHTML = qData.q;
+        showBaseHint(qData);
+
+        // 新增：當題目屬於「相差」、「比較」或「共有」類型時，預設立刻顯示提示
+        if (qData.q.includes('相差') || qData.q.includes('比') || qData.q.includes('共')) {
+            showEquationHint(qData);
+            showVisualHint(qData);
+        }
+
+        const optsContainer = document.getElementById('options-container');
+        optsContainer.innerHTML = '';
+
+        qData.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'mc-option';
+            const suffix = (typeof opt === 'number' && !qData.hideUnit) ? (currentMode === 'itemList' ? '' : ' 元') : '';
+            btn.innerText = opt + suffix;
+            btn.onclick = () => checkAnswer(opt, btn);
+            optsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedOpt, btnElement) {
+        clearAutoTimer();
+
+        const qData = currentQuestions[currentQIndex];
+        const feedback = document.getElementById('feedback');
+
+        feedback.classList.remove('shake');
+        void feedback.offsetWidth;
+
+        if (selectedOpt === qData.ans) {
+            combo++;
+            const points = 10 * combo;
+            score += points;
+            updateStats();
+
+            // 播放答對音效
+            const correctAudio = document.getElementById('correct-sound');
+            if(correctAudio) {
+                correctAudio.currentTime = 0;
+                correctAudio.play().catch(e => console.log('Audio play blocked:', e));
+            }
+
+            // 顯示答對彈出視窗
+            const popup = document.getElementById('correct-popup');
+            const popupPoints = document.getElementById('correct-popup-points');
+            popupPoints.innerText = `+${points} 分 (連擊 x${combo})`;
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 5000); // 5秒後隱藏
+
+            feedback.innerHTML = `<span class="correct">🎉 答對了！<br>5 秒後下一題</span>`;
+            document.querySelectorAll('.mc-option').forEach(b => b.classList.add('disabled'));
+
+            autoTimer = setTimeout(() => {
+                currentQIndex++;
+                feedback.innerHTML = '';
+                if (currentQIndex < currentQuestions.length) {
+                    renderQuestion();
+                } else {
+                    finishTheme();
+                }
+            }, 5000);
+        } else {
+            combo = 0;
+            updateStats();
+            btnElement.classList.add('disabled');
+            currentWrongCount++;
+
+            if (currentWrongCount === 1) {
+                feedback.innerHTML = `<span class="wrong">💦 再試一次！先看下面提示。</span>`;
+                showEquationHint(qData);
+            } else {
+                feedback.innerHTML = `<span class="wrong">💦 再試一次！看看表格中的視覺提示。</span>`;
+                showEquationHint(qData);
+                showVisualHint(qData);
+            }
+
+            feedback.classList.add('shake');
+        }
+    }
+
+    function updateStats() {
+        document.getElementById('score-display').innerText = score;
+        const comboDisplay = document.getElementById('combo-display');
+        comboDisplay.innerText = combo;
+        comboDisplay.classList.remove('combo-text');
+        void comboDisplay.offsetWidth;
+        comboDisplay.classList.add('combo-text');
+    }
+
+    function markThemeCompleted(mode, index) {
+        const list = playerProgress[mode].completedThemes;
+        if (!list.includes(index)) {
+            list.push(index);
+            list.sort((a, b) => a - b);
+            saveProgress();
+        }
+    }
+
+    function launchConfetti() {
+        const app = document.getElementById('app');
+        const colors = ['#ff6b81', '#1e90ff', '#2ed573', '#ffa502', '#a55eea', '#ffb142'];
+
+        for (let i = 0; i < 60; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + '%';
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
+            piece.style.width = (8 + Math.random() * 8) + 'px';
+            piece.style.height = (12 + Math.random() * 10) + 'px';
+            app.appendChild(piece);
+
+            setTimeout(() => piece.remove(), 5000);
+        }
+    }
+
+    function finishTheme() {
+        clearAutoTimer();
+
+        markThemeCompleted(currentMode, currentThemeIndex);
+        updateProgressUI();
+
+        const overlay = document.getElementById('overlay');
+        const overlayMessage = document.getElementById('overlay-message');
+        const nextTarget = getNextUnplayedModeAndTheme();
+
+        overlay.style.display = 'flex';
+
+        if (nextTarget.doneAll) {
+            overlay.querySelector('h2').innerText = '🏆 全部完成！100% 達成！';
+            overlayMessage.innerHTML = `你已完成全部主題！<br>5 秒後返回首頁。`;
+            document.getElementById('overlay-icons').innerText = '🎊 🎉 🌈';
+            launchConfetti();
+
+            autoTimer = setTimeout(() => {
+                overlay.style.display = 'none';
+                showScreen('home-screen');
+                updateProgressUI();
+            }, 5000);
+            return;
+        }
+
+        overlay.querySelector('h2').innerText = '🎉 任務完成！';
+        overlayMessage.innerHTML = `5 秒後前往：<br>${nextTarget.label}`;
+        document.getElementById('overlay-icons').innerText = '🚀 🌟 🏆';
+
+        autoTimer = setTimeout(() => {
+            overlay.style.display = 'none';
+            currentMode = nextTarget.mode;
+            score = 0;
+            combo = 0;
+            updateStats();
+            startGame(nextTarget.index);
+        }, 5000);
+    }
+
+    document.getElementById('progress-ring').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleProgressPanel();
+        }
+    });
+
+    updateStats();
+    updateProgressUI();
+</script>
+
+    <div id="correct-popup" class="correct-popup">
+        <span class="correct-popup-icon">🎉</span>
+        <div class="correct-popup-text">答對了！</div>
+        <div id="correct-popup-points" class="correct-popup-points">+10 分</div>
+    </div>
+
+</body>
+</html>
